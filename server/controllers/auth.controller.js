@@ -115,8 +115,24 @@ async function login(req, res) {
   }
 }
 
+function getMe(req, res) {
+  const user = req.user;
+  return res.status(200).json({
+    success: true,
+    data: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    }
+  });
+}
+
 module.exports = {
   register,
-  login
+  login,
+  getMe
 };
 

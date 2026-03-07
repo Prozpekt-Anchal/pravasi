@@ -70,7 +70,9 @@ async function getTrips(req, res) {
 
 async function getTripById(req, res) {
   try {
-    const trip = await Trip.findById(req.params.id);
+    const trip = await Trip.findById(req.params.id)
+      .populate('owner', 'name email')
+      .populate('members.user', 'name email');
 
     if (!trip) {
       return res.status(404).json({
@@ -142,19 +144,31 @@ async function deleteTrip(req, res) {
 
 async function inviteMember(req, res) {
   try {
-    const { userId, role } = req.body;
+    const { userId, email, role } = req.body;
 
-    if (!userId || !role) {
+    if (!role || !['editor', 'viewer'].includes(role)) {
       return res.status(400).json({
         success: false,
-        error: 'userId and role are required'
+        error: 'role (editor or viewer) is required'
       });
     }
 
-    if (!['owner', 'editor', 'viewer'].includes(role)) {
+    const User = require('../models/User');
+    let targetUserId = userId;
+    if (email && !targetUserId) {
+      const userByEmail = await User.findOne({ email: email.trim().toLowerCase() });
+      if (!userByEmail) {
+        return res.status(404).json({
+          success: false,
+          error: 'No user found with this email'
+        });
+      }
+      targetUserId = userByEmail._id;
+    }
+    if (!targetUserId) {
       return res.status(400).json({
         success: false,
-        error: 'Invalid role'
+        error: 'email or userId is required'
       });
     }
 
@@ -168,7 +182,7 @@ async function inviteMember(req, res) {
     }
 
     const alreadyMember = trip.members.some(
-      (m) => String(m.user) === String(userId)
+      (m) => String(m.user) === String(targetUserId)
     );
 
     if (alreadyMember) {
@@ -179,7 +193,7 @@ async function inviteMember(req, res) {
     }
 
     trip.members.push({
-      user: userId,
+      user: targetUserId,
       role
     });
 
