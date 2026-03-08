@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { CardSkeleton } from '../components/Skeleton';
+import { useSidebar } from '../components/Sidebar';
 
 const ROLE_COLORS = {
   owner: 'bg-[#6366f1]/20 text-[#818cf8] border-[#6366f1]/30',
@@ -40,6 +41,7 @@ function getGradient(destination) {
 export function Dashboard() {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { setIsOpen: setSidebarOpen } = useSidebar();
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -103,8 +105,39 @@ export function Dashboard() {
   }
 
   return (
-    <div className="p-8 max-w-6xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 pt-20 lg:p-8 lg:pt-8 max-w-6xl">
+      {/* Mobile header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-[#111111] border-b border-[#2a2a2a] px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="shrink-0 p-2 -ml-2 rounded-lg text-[#f5f5f5] hover:bg-[#1a1a1a] transition-colors"
+              aria-label="Open menu"
+            >
+              <span className="text-xl">☰</span>
+            </button>
+            <span className="shrink-0 text-lg font-semibold text-[#f5f5f5] tracking-tight">Pravasi</span>
+            <span className="shrink-0 text-[#2a2a2a]">|</span>
+            <span className="text-[#f5f5f5] font-medium truncate">My Trips</span>
+            <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] text-[#71717a] text-xs font-medium">
+              {trips.length}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className="shrink-0 inline-flex items-center gap-1.5 bg-[#6366f1] hover:bg-[#4f46e5] text-white font-medium px-3 py-2 rounded-lg text-sm transition-all duration-200"
+          >
+            <span className="text-base leading-none">+</span>
+            <span className="hidden sm:inline">New Trip</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop header */}
+      <div className="hidden lg:flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-semibold text-[#f5f5f5] tracking-tight">My Trips</h1>
           <span className="px-2.5 py-0.5 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] text-[#71717a] text-sm font-medium">
