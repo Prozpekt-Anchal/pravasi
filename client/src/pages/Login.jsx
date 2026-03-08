@@ -41,7 +41,9 @@ export function Login() {
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4 font-sans">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold text-[#f5f5f5] tracking-tight">Pravasi</h1>
+          <Link to="/" className="inline-block hover:opacity-80 transition-opacity">
+            <h1 className="text-2xl font-semibold text-[#f5f5f5] tracking-tight">Pravasi</h1>
+          </Link>
           <p className="text-[#71717a] text-sm mt-1">Plan together. Travel better.</p>
         </div>
         <div className="bg-[#111111] border border-[#2a2a2a] rounded-xl p-8 shadow-xl">
