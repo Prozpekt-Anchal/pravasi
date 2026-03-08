@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
@@ -20,10 +20,30 @@ function getInitials(name, email) {
   return 'U';
 }
 
+// Context for sidebar state
+const SidebarContext = createContext(null);
+
+export function useSidebar() {
+  const context = useContext(SidebarContext);
+  if (!context) {
+    throw new Error('useSidebar must be used within a SidebarProvider');
+  }
+  return context;
+}
+
+export function SidebarProvider({ children }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <SidebarContext.Provider value={{ isOpen, setIsOpen }}>
+      {children}
+    </SidebarContext.Provider>
+  );
+}
+
 export function Sidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, setIsOpen } = useSidebar();
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
@@ -92,16 +112,6 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile hamburger button */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-40 p-2 rounded-lg bg-[#111111] border border-[#2a2a2a] text-[#f5f5f5] hover:bg-[#1a1a1a] transition-colors"
-        aria-label="Open menu"
-      >
-        <span className="text-xl">☰</span>
-      </button>
-
       {/* Mobile overlay backdrop */}
       {isOpen && (
         <div
